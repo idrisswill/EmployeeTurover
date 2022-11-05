@@ -26,5 +26,5 @@ ci-dessous la liste des sources de données
 - https://www.kaggle.com/datasets/HRAnalyticRepository/employee-attrition-data
 - https://www.kaggle.com/datasets/tejashvi14/employee-future-prediction
 - https://www.kaggle.com/datasets/pavansubhasht/ibm-hr-analytics-attrition-dataset
-- https://www.kaggle.com/datasets/harriken/employeeturnover(https://www.kaggle.com/code/sonnyyap/employeechurnanalysis merging data)
+- https://www.kaggle.com/datasets/harriken/employeeturnover (https://www.kaggle.com/code/sonnyyap/employeechurnanalysis merging data)
 - https://www.kaggle.com/datasets/harriken/predict-employee-ausentism
