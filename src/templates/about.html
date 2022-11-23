@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}
+{% if title %}
+Employees Turnover - {{ title}}
+{% else %}
+Distribution
+{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if dataset_usage and select_target and select_data %}
+<p>
+    <img src='/chart?param={
+        "type": "distribution",
+        "dataset": "{{ dataset_usage }}",
+        "select_target": "{{ select_target }}",
+        "select_data": "{{ select_data }}"
+    }' alt="">
+</p>
+{% endif %}
+{% endblock %}

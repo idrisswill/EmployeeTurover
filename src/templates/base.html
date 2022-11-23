@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    {% block head %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% block styles %}
+    {{ bootstrap.load_css() }}
+    {% endblock %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    <title>{% block title %}{% endblock %}</title>
+    {% endblock %}
+</head>
+<body>
+<header class="site-header">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+   <div class="container-md">
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+      <a class="navbar-brand" href="{{ url_for('index') }}">Employee-TurnOver</a>
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{{ url_for('index') }}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('estimate_distribution', dataset_use='') }}">Distribution</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link">About Us</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+     </div>
+</nav>
+
+</header>
+<main role="main" class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+
+    {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+  <strong>Employees turnover ! </strong>{{ message }}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+  <div class="row">
+    <div class="col-md-8">
+      {% block content %}{% endblock %}
+    </div>
+    <div class="col-md-4">
+      <div class="content-section">
+        <h3>Our Sidebar</h3>
+        <p class='text-muted'>You can put any information here you'd like. </p>
+      </div>
+       <div class="mb-3">
+         <div class="card" >
+            <div class="card-header">
+                Import Data
+            </div>
+             <div class="container-fluid">
+    <form class="d-flex" action="/upload" method="post" enctype="multipart/form-data">
+        <input class="form-control me-2" type="file" id="formFileMultiple" multiple name="file">
+      <button class="btn btn-outline-success" type="submit">Upload</button>
+    </form>
+  </div>
+        </div>
+       </div>
+            <form action="/select_dataset" method="post" >
+        <div class="mb-3">
+            <label class="form-label">Select Dataset</label>
+            {% if datasets %}
+
+            <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" name="dataset_select">
+                {% for dataset in datasets %}
+                {% if dataset_usage and dataset.name == dataset_usage %}
+                <option selected>{{ dataset_usage }}</option>
+                {% else %}
+                    {% if loop.index == 1 %}
+                    <option selected>{{ dataset.name }}</option>
+                    {% else %}
+                    <option value="{{ dataset.name }}">{{ dataset.name }}</option>
+                    {% endif %}
+                {% endif %}
+                 {% endfor %}
+            </select>
+
+            {% endif %}
+            <button class="btn btn-outline-success" type="submit">Analyse</button>
+        </div>
+        </form>
+
+        {% if columns is defined and columns|length > 0 and dataset_usage %}
+         <form action="/select_target/{{ dataset_usage }}" method="post" >
+        <div class="mb-3">
+            <label class="form-label">Select target column</label>
+            <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" name="select_target">
+                {% for column in columns %}
+                {% if select_target  and column == select_target %}
+                <option selected>{{ column }}</option>
+                {% else %}
+                    {% if loop.index == 1 %}
+                    <option selected>{{ column }}</option>
+                    {% else %}
+                    <option value="{{ column }}">{{ column }}</option>
+                    {% endif %}
+                {% endif %}
+                {% endfor %}
+            </select>
+
+            <button class="btn btn-outline-success" type="submit">Send</button>
+        </div>
+        </form>
+        {% endif %}
+     {% if columns_data is defined and columns_data|length > 0 and select_target %}
+         <form action="/select_data_column/{{ dataset_usage }}/{{ select_target }}" method="post" >
+        <div class="mb-3">
+            <label class="form-label">Select column data</label>
+            <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" name="select_data">
+                {% for data in columns_data %}
+                {% if select_data  and data == select_data %}
+                <option selected>{{ data }}</option>
+                {% else %}
+                    {% if loop.index == 1 %}
+                    <option selected>{{ data }}</option>
+                    {% else %}
+                    <option value="{{ data }}">{{ data }}</option>
+                    {% endif %}
+                {% endif %}
+                {% endfor %}
+            </select>
+
+            <button class="btn btn-outline-success" type="submit">Send data</button>
+        </div>
+        </form>
+        {% endif %}
+        {% if select_data %}
+         <form action="/select_data_column/{{ dataset_usage }}/{{ select_target }}/{{ select_data }}" method="post" >
+            <label for="myscale" class="form-label">Scale of data</label>
+            <input type="range" class="form-range" min="0" max="1" step="0.05" id="myscale" name="scale" onchange="updateProgress(this.value);" value="1" >
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" id="myprogress">100%</div>
+            </div>
+             <script type="text/javascript" charset="utf-8">
+
+                function updateProgress(val) {
+          document.getElementById('myprogress').innerHTML=100*val+'%';
+          document.getElementById('myprogress').style.width = 100*val+'%';
+        }
+
+             </script>
+             <button class="btn btn-outline-success" type="submit">Send scale</button>
+        </form>
+        {% endif %}
+
+
+      </div>
+    </div>
+</main>
+
+
+{% block scripts %}
+{{ bootstrap.load_js() }}
+{% endblock %}
+</body>
+</html>

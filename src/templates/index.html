@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}
+{% if title %}
+Employees Turnover - {{ title}}
+{% else %}
+Distribution
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<h1 class="display-2"> jolis graphs ...</h1>
+    {% for dataset in datasets %}
+        <div class="card text-center">
+  <div class="card-header">
+    Dataset: {{ dataset.name }}
+  </div>
+  <div class="card-body">
+      <p class="card-text">Ce dataset contien: {{ dataset.nbr_row }} lignes et {{ dataset.nbr_column }} colonnes pour une taille memoire de {{ dataset.memory_size }} Mo</p>
+    <h5 class="card-title">rapport du pourcentage de valeur null</h5>
+      {% for key, value in dataset.rapport_null.items() %}
+        <p class="card-text">{{ key }} : {{ value }} %.</p>
+    {% endfor %}
+
+    <a href="#" class="btn btn-primary">Analyser</a>
+  </div>
+  <div class="card-footer text-muted">
+    Created on: {{ dataset.create_at }}
+  </div>
+</div>
+    {% endfor %}
+
+{% endblock %}
